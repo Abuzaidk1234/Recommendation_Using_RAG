@@ -4,3 +4,5 @@ chromadb
 sentence-transformers
 google-generativeai
 pydantic
+supabase
+python-dotenv
