@@ -7,6 +7,8 @@ from typing import List, Dict, Any, Optional
 import os
 from chromadb.api.types import EmbeddingFunction, Documents, Embeddings
 import google.generativeai as genai
+from google.api_core.exceptions import ResourceExhausted
+import time
 
 class CustomGeminiEmbeddingFunction(EmbeddingFunction):
     def __init__(self, api_key: str):
@@ -16,17 +18,24 @@ class CustomGeminiEmbeddingFunction(EmbeddingFunction):
         self.model = "models/gemini-embedding-001"
         
     def __call__(self, input: Documents) -> Embeddings:
-        # Gemini API limits embedding batch size to 100 per request, so we process in chunks
+        # Gemini API limits embedding batch size to 100 per request, and 100 requests per minute on free tier.
         chunk_size = 90
         all_embeddings = []
         for i in range(0, len(input), chunk_size):
             chunk = input[i:i + chunk_size]
-            result = genai.embed_content(
-                model=self.model,
-                content=chunk,
-                task_type="RETRIEVAL_DOCUMENT"
-            )
-            all_embeddings.extend(result['embedding'])
+            success = False
+            while not success:
+                try:
+                    result = genai.embed_content(
+                        model=self.model,
+                        content=chunk,
+                        task_type="RETRIEVAL_DOCUMENT"
+                    )
+                    all_embeddings.extend(result['embedding'])
+                    success = True
+                except ResourceExhausted:
+                    print("Gemini API rate limit reached (100 items/min). Sleeping for 60 seconds...")
+                    time.sleep(60)
         return all_embeddings
 
 #Intitalize ChromaDB client
