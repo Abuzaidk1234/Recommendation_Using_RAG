@@ -1,4 +1,4 @@
-node_modules/
+﻿node_modules/
 __pycache__/
 chroma_db/
 .env
@@ -10,3 +10,4 @@ frontend/.vite/
 venv/
 env/
 .venv/
+extracted_tools.json
