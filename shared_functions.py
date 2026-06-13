@@ -5,6 +5,22 @@ import re
 import numpy as np
 from typing import List, Dict, Any, Optional
 import os
+from chromadb.api.types import EmbeddingFunction, Documents, Embeddings
+import google.generativeai as genai
+
+class CustomGeminiEmbeddingFunction(EmbeddingFunction):
+    def __init__(self, api_key: str):
+        genai.configure(api_key=api_key)
+        self.model = "models/text-embedding-004"
+        
+    def __call__(self, input: Documents) -> Embeddings:
+        result = genai.embed_content(
+            model=self.model,
+            content=input,
+            task_type="retrieval_document"
+        )
+        return result['embedding']
+
 #Intitalize ChromaDB client
 client = chromadb.Client()
 def load_food_data(file_path: str) -> List[Dict]:
@@ -55,8 +71,8 @@ def create_similarity_search_collection(collection_name: str, collection_metadat
     except:
         pass
     
-    # Create embedding function using Gemini to save RAM
-    gemini_ef = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
+    # Create embedding function using Gemini custom class to avoid ChromaDB header bug
+    gemini_ef = CustomGeminiEmbeddingFunction(
         api_key=os.environ.get("GEMINI_API_KEY")
     )
     
