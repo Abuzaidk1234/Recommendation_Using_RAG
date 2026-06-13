@@ -1,0 +1,12 @@
+node_modules/
+__pycache__/
+chroma_db/
+.env
+.DS_Store
+frontend/dist/
+frontend/.vite/
+*.pyc
+*.pyo
+venv/
+env/
+.venv/
