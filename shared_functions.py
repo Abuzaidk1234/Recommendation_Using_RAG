@@ -4,6 +4,7 @@ import json
 import re
 import numpy as np
 from typing import List, Dict, Any, Optional
+import os
 #Intitalize ChromaDB client
 client = chromadb.Client()
 def load_food_data(file_path: str) -> List[Dict]:
@@ -54,19 +55,16 @@ def create_similarity_search_collection(collection_name: str, collection_metadat
     except:
         pass
     
-    # Create embedding function
-    sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name="all-MiniLM-L6-v2"
+    # Create embedding function using Gemini to save RAM
+    gemini_ef = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
+        api_key=os.environ.get("GEMINI_API_KEY")
     )
     
     # Create new collection
     return client.create_collection(
         name=collection_name,
         metadata=collection_metadata,
-        configuration={
-	        "hnsw": {"space": "cosine"},
-	        "embedding_function": sentence_transformer_ef
-	    }
+        embedding_function=gemini_ef
     )
 def populate_similarity_collection(collection, food_items: List[Dict]):
     """Populate collection with food data and generate embeddings"""
