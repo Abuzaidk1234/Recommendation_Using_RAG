@@ -13,7 +13,7 @@ class CustomGeminiEmbeddingFunction(EmbeddingFunction):
         if api_key:
             os.environ['GOOGLE_API_KEY'] = api_key
             genai.configure(api_key=api_key)
-        self.model = "models/text-embedding-004"
+        self.model = "models/embedding-001"
         
     def __call__(self, input: Documents) -> Embeddings:
         # Gemini API limits embedding batch size to 100 per request, so we process in chunks
@@ -24,7 +24,7 @@ class CustomGeminiEmbeddingFunction(EmbeddingFunction):
             result = genai.embed_content(
                 model=self.model,
                 content=chunk,
-                task_type="retrieval_document"
+                task_type="RETRIEVAL_DOCUMENT"
             )
             all_embeddings.extend(result['embedding'])
         return all_embeddings
