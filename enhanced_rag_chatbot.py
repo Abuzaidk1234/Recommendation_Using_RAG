@@ -161,10 +161,9 @@ Retrieved Context (Top Matches):
 {context}
 
 Instructions:
-1. If the user asks for ingredients or a recipe (e.g., "how to make X", "ingredients in Y"), you MUST list the EXACT ingredients provided in the "Key ingredients" section of the context. Do not use generic descriptions.
+1. If the user asks for ingredients or a recipe (e.g., "how to make X", "ingredients in Y"), you MUST list the EXACT ingredients provided in the "Key ingredients" section of the context. If the context does not contain a full recipe, you are highly encouraged to use your general AI knowledge to provide a detailed recipe and step-by-step instructions.
 2. If the user just asks for general recommendations (e.g., "spicy indian curry"), DO NOT list recipes. Just name the top 2-3 dishes and give a brief 1-sentence description of each.
-3. Use the provided context to answer accurately. Do NOT make up information that isn't in the context.
-4. Keep the response concise, helpful, and conversational.
+3. Keep the response concise, helpful, and conversational.
 
 Response:'''
 
@@ -246,6 +245,10 @@ def enhanced_rag_food_chatbot(collection):
             
             else:
                 # Process the food query with enhanced RAG
+                system_instruction="""You are the Cuisine Compass AI, a helpful food recommendation assistant.
+            Use the provided food database information to recommend dishes.
+            If the user asks for a recipe or general cooking advice, you are allowed to use your general knowledge to provide a detailed recipe and instructions.
+            Keep your answers conversational and friendly."""
                 handle_enhanced_rag_query(collection, user_input, conversation_history)
                 conversation_history.append(user_input)
                 
