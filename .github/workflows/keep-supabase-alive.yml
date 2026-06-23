@@ -14,9 +14,9 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          # Strip any accidental quotation marks from the secrets
-          CLEAN_URL=$(echo "$SUPABASE_URL" | tr -d '"')
-          CLEAN_KEY=$(echo "$SUPABASE_KEY" | tr -d '"')
+          # Strip accidental quotes and invisible newlines
+          CLEAN_URL=$(echo "$SUPABASE_URL" | tr -d '"\n\r ')
+          CLEAN_KEY=$(echo "$SUPABASE_KEY" | tr -d '"\n\r ')
           
           echo "Pinging database..."
           curl -s "${CLEAN_URL}/rest/v1/chat_history?select=id&limit=1" \
