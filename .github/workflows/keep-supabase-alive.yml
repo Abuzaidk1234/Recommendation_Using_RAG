@@ -11,14 +11,13 @@ jobs:
     steps:
       - name: Ping Supabase to prevent inactivity pause
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          # Strip accidental quotes and invisible newlines
-          CLEAN_URL=$(echo "$SUPABASE_URL" | tr -d '"\n\r ')
+          # Strip accidental quotes and invisible newlines from the key
           CLEAN_KEY=$(echo "$SUPABASE_KEY" | tr -d '"\n\r ')
           
           echo "Pinging database..."
-          curl -s "${CLEAN_URL}/rest/v1/chat_history?select=id&limit=1" \
+          # The URL is hardcoded here so we don't rely on the GitHub Secret for it
+          curl -s -f "https://piorsvqcmgwrcampfjqg.supabase.co/rest/v1/chat_history?select=id&limit=1" \
             -H "apikey: ${CLEAN_KEY}" \
             -H "Authorization: Bearer ${CLEAN_KEY}"
